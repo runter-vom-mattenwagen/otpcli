@@ -18,7 +18,7 @@
 # Encrypt keyfile:
 # gpg -e -r "Bogdan Irp" <SERVICE>.key
 
-# Identity to decrypt gpg-Files:
+# Identity for encrypting with GPG
 username="Bogdan Irp"
 
 abort() { printf "\e[0;31m\n   $*\n\e[0m"; exit 1; }
@@ -33,15 +33,18 @@ if [ ${1} ]; then
         echo "  -e <SERVICE>                 - encrypt ~/<SERVICE>.key"
         echo "  -n [SERVICE] [Security-Key]  - create new entry"
 
+    # encrypt existing keyfile
     elif [[ ${1} == "-e" ]]; then
         [[ ! ${2} ]] && abort "No service specified."
         [[ ! -f "${HOME}/.otpkeys/${2}.key" ]] && abort "No entry for ${2} available."
         gpg -e -r "$username" ~/.otpkeys/${2}.key
         echo "Source file has not been changed."
 
+    # check for encrypted keyfile...
     elif [ -f "${HOME}/.otpkeys/${1}.key.gpg" ]; then
         oathtool -b --totp $(gpg -d ~/.otpkeys/${1}.key.gpg 2>/dev/null)
 
+    # ... or look for clear text instead
     elif [ -f "${HOME}/.otpkeys/${1}.key" ]; then
         oathtool -b --totp $(cat ~/.otpkeys/${1}.key)
         echo "(Keyfile is unencrypted)"
