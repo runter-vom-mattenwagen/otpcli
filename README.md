@@ -28,6 +28,6 @@ Easiest way is simply type ```otp.sh``` and select a service from the list. The 
 
 The command line options "-n" and "-e" are currently sort of dummy. :-)
 
-<img src="https://runter-vom-mattenwagen.github.io/otpcli.gif" height=80% width=80%>
+<img src="https://runter-vom-mattenwagen.github.io/otpcli.gif">
 
 
