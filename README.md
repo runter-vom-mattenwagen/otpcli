@@ -27,3 +27,7 @@ Finally copy otp.sh to a place from where you want to start it.
 Easiest way is simply type ```otp.sh``` and select a service from the list. The second easiest method is to type ```otp.sh <SERVICENAME>```, without the suffix key oder key.gpg. Both options answer with the one-time password which you should copy in time into the appropriate field.
 
 The command line options "-n" and "-e" are currently sort of dummy. :-)
+
+<img src="https://runter-vom-mattenwagen.github.io/otpcli.gif" height=80% width=80%>
+
+
