@@ -1,6 +1,6 @@
 # OTPCLI - 2FA in Bash
 
-OTPCLI is a Bash script around oathtool which calculates 2FA-codes from keyfiles. It uses GPG if wanted.
+OTPCLI is a Bash script around oathtool which calculates 2FA-codes from keyfiles. It uses GPG if desired.
 
 ## Setup/PreReqs
 
@@ -24,7 +24,7 @@ Finally copy otp.sh to a place from where you want to start it.
 
 ## Usage
 
-Easiest way is simply type ```otp.sh``` and select a service from the list. The second easiest method is to type ```otp.sh <SERVICENAME>```, without the suffix key oder key.gpg. Both options answer with the one-time password which you should copy in time into the appropriate field.
+Easiest way is simply type ```otp.sh``` and select a service from the list. The second easiest method is to type ```otp.sh <SERVICENAME>```, without the suffix .key or .key.gpg. Both options answer with the one-time password which you should copy in time into the appropriate field.
 
 The command line options "-n" and "-e" are currently sort of dummy. :-)
 
