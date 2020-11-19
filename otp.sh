@@ -22,8 +22,20 @@
 username="Bogdan Irp"
 
 abort() { printf "\e[0;31m\n   $*\n\e[0m"; exit 1; }
+confirm() { read -sn 1 -p "$* [Y/N] "; [[ ${REPLY:0:1} = [JjYy] ]]; }
 
 [[ ! $(which oathtool) ]] && abort "oathtool is not installed."
+
+# Ask for creation of directory if not exists
+if [[ ! -d ~/.otpkeys ]]; then
+    echo -n "~/.otpkeys does not exist. "
+    if confirm "Create?"; then
+        mkdir ~/.otpkeys
+        exit 0
+    else
+        abort "\nAbort."
+    fi
+fi
 
 if [ ${1} ]; then
     if [[ ${1} == "-h" ]]; then
@@ -31,14 +43,28 @@ if [ ${1} ]; then
         echo " "
         echo "     <SERVICE>                 - show TOTP for <SERVICE>"
         echo "  -e <SERVICE>                 - encrypt ~/<SERVICE>.key"
-        echo "  -n [SERVICE] [Security-Key]  - create new entry"
+        echo "  -d <SERVICE>                 - decrypt ~/<SERVICE>.key"
+        echo "  -n [SERVICE] [Security Key]  - create new entry"
 
     # encrypt existing keyfile
     elif [[ ${1} == "-e" ]]; then
         [[ ! ${2} ]] && abort "No service specified."
-        [[ ! -f "${HOME}/.otpkeys/${2}.key" ]] && abort "No entry for ${2} available."
-        gpg -e -r "$username" ~/.otpkeys/${2}.key
-        echo "Source file has not been changed."
+        [[ ! -f "${HOME}/.otpkeys/${2}.key" ]] && abort "No unencrypted entry for ${2} available."
+        gpg -e -r "$username" ~/.otpkeys/${2}.key && rm -f ~/.otpkeys/${2}.key
+        echo "(Encrypted: ${2}.key -> ${2}.key.gpg)"
+
+    # show decrypted secret
+    elif [[ ${1} == "-d" ]]; then
+        [[ ! ${2} ]] && abort "No service specified."
+        [[ ! -f "${HOME}/.otpkeys/${2}.key.gpg" ]] && abort "No encrypted entry for ${2} available."
+        gpg -d ~/.otpkeys/${2}.key.gpg 2>/dev/null
+        echo "(Encrypted file is unchanged)"
+
+    # create new token
+    elif [[ ${1} == "-n" ]]; then
+        [[ ! ${3} ]] && abort "otpcli.sh -n [SERVICE] [Security-Key]"
+        [[ -f ~/.otpkeys/${2}.key ]] && abort "Entry for ${2} already exists."
+        echo ${3} > ~/.otpkeys/${2}.key
 
     # check for encrypted keyfile...
     elif [ -f "${HOME}/.otpkeys/${1}.key.gpg" ]; then
@@ -50,7 +76,7 @@ if [ ${1} ]; then
         echo "(Keyfile is unencrypted)"
 
     else
-        echo "No entry for ${1} available."
+        abort "No entry for ${1} available."
     fi
 else
     n=0
@@ -59,6 +85,10 @@ else
         n=$((n+1))
         echo "$n) $service"
     done
+
+    # no existing keyfile 
+    [[ $n == 0 ]] && abort "Create a token with otp.sh -n [SERVICE] [Security Key]"
+
     read -p "Choice: " choice
     choice=$((choice-1))
     echo -e "\n${services[$choice]}"
