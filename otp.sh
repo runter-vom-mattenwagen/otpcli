@@ -10,13 +10,10 @@
 #
 # Bogdan Irp (bogdan@meisernet.edu)
 #
-# Each service must have a keyfile in directory ~/.otpkeys
-# with the name <SERVICE>.key, or <SERVICE>.key.gpg for
-# encrypted files. These files contain the secret key which
-# is used to calculate the One Time Password.
+# This script manages keyfiles in ~/.otpkeys to calculate
+# timebased one time passwords (TOTP).
 #
-# Encrypt keyfile:
-# gpg -e -r "Bogdan Irp" <SERVICE>.key
+# gpg encryption can also be handled if an identity is configured.
 
 # Identity for encrypting with GPG
 username="Bogdan Irp"
@@ -43,7 +40,8 @@ if [ ${1} ]; then
         echo " "
         echo "     <SERVICE>                 - show TOTP for <SERVICE>"
         echo "  -e <SERVICE>                 - encrypt ~/<SERVICE>.key"
-        echo "  -d <SERVICE>                 - decrypt ~/<SERVICE>.key"
+        echo "  -d <SERVICE>                 - decrypt ~/<SERVICE>.key.gpg"
+        echo "  -r <SERVICE>                 - remove <SERVICE>"
         echo "  -n [SERVICE] [Security Key]  - create new entry"
 
     # encrypt existing keyfile
