@@ -15,9 +15,6 @@
 #
 # gpg encryption can also be handled if an identity is configured.
 
-# Identity for encrypting with GPG
-username="Bogdan Irp"
-
 abort() { printf "\e[0;31m\n   $*\n\e[0m"; exit 1; }
 confirm() { read -sn 1 -p "$* [Y/N] "; [[ ${REPLY:0:1} = [JjYy] ]]; }
 
@@ -34,6 +31,14 @@ if [[ ! -d ~/.otpkeys ]]; then
     fi
 fi
 
+# Identity for encrypting with GPG
+if [[ ! -f ~/.otpkeys/.otp-id ]]; then
+    read -p "GPG Identity: " identity
+    echo $identity > ~/.otpkeys/.otp-id
+fi
+
+identity=$(cat ~/.otpkeys/.otp-id)
+
 if [ ${1} ]; then
     if [[ ${1} == "-h" ]]; then
         echo "Usage: $0 [OPTION] <SERVICE>"
@@ -48,7 +53,7 @@ if [ ${1} ]; then
     elif [[ ${1} == "-e" ]]; then
         [[ ! ${2} ]] && abort "No service specified."
         [[ ! -f "${HOME}/.otpkeys/${2}.key" ]] && abort "No unencrypted entry for ${2} available."
-        gpg -e -r "$username" ~/.otpkeys/${2}.key && rm -f ~/.otpkeys/${2}.key
+        gpg -e -r "$identity" ~/.otpkeys/${2}.key && rm -f ~/.otpkeys/${2}.key
         echo "(Encrypted: ${2}.key -> ${2}.key.gpg)"
 
     # show decrypted secret
