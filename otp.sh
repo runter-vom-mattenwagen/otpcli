@@ -33,12 +33,19 @@ fi
 
 # Identity for encrypting with GPG
 if [[ ! -f ~/.otpkeys/.otp-id ]]; then
-    read -p "GPG Identity: " identity
-    gpg -k|grep -q "$identity" || abort "$identity is not valid."
+    if [[ $(which gpg) ]]; then
+        read -p "GPG Identity: " identity
+        if [[ $identity ]]; then
+            gpg -k|grep -q "$identity" || abort "$identity is not valid."
+        else
+            identity="NO_GPG"
+        fi
     echo $identity > ~/.otpkeys/.otp-id
+    fi
+else
+    identity=$(cat ~/.otpkeys/.otp-id)
 fi
 
-identity=$(cat ~/.otpkeys/.otp-id)
 
 if [ ${1} ]; then
     if [[ ${1} == "-h" ]]; then
@@ -69,6 +76,11 @@ if [ ${1} ]; then
         [[ ! ${3} ]] && abort "otpcli.sh -n [SERVICE] [Security-Key]"
         [[ -f ~/.otpkeys/${2}.key ]] && abort "Entry for ${2} already exists."
         echo ${3} > ~/.otpkeys/${2}.key
+        if [[ ! "$identity" == "NO_GPG" ]]; then
+            if confirm "Encrypt keyfile?"; then
+                $0 -e ${2}
+            fi
+        fi
 
     # check for encrypted keyfile...
     elif [ -f "${HOME}/.otpkeys/${1}.key.gpg" ]; then

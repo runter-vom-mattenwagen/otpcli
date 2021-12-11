@@ -16,17 +16,21 @@ The keyfiles can be encrypted with GPG. GPG itself should be already installed o
 
 When you create a 2nd factor on any service in order to use it later e.g. with Google Authenticator, the QR code presented to you actually contains a security key. The 2FA app then uses this key in combination with the current time to calculate your one-time password. 
 
-Create a directory ```.otpkeys``` in your homedir with ```$ mkdir ~/.otpkeys``` or your desired way to create directories and then create a keyfile in this directory for each service in the format ```<SERVICENAME>.key```, in which you write the relevant security key.
+The script expect a directory ```.otpkeys``` in your homedir to store service information and the name of the GPG identity. Both will be created automatically on first run if not present. For each service a file ```<SERVICENAME>.key``` will be created which contains its security key. If the key is encrypted with GPG the file will get the extension ```.gpg```.
 
-OTPCLI can handle GPG encrypted keyfiles. Provided you have already a GPG identity configured, then simply encrypt the keyfiles with ```gpg -e -r "<IDENTITY>" <SERVICE>.key``` and delete the not encrypted file.
+OTPCLI can encrypt the keyfiles with ```gpg -e -r "<IDENTITY>" <SERVICE>.key```. The unencrypted file will automatically be deleted.
 
-Finally copy otp.sh to a place from where you want to start it.
+tl;dr:
+
+- install oathtool
+- have a working GPG configuration (optional)
+- copy otp.sh to a directory in path
+- run otp.sh
+
 
 ## Usage
 
 Easiest way is simply type ```otp.sh``` and select a service from the list. The second easiest method is to type ```otp.sh <SERVICENAME>```, without the suffix .key or .key.gpg. Both options answer with the one-time password which you should copy in time into the appropriate field.
-
-The command line options "-n" and "-e" are currently sort of dummy. :-)
 
 <img src="https://runter-vom-mattenwagen.github.io/otpcli.gif">
 
