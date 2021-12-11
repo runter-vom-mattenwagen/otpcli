@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 #
 # File: otp.sh
 #
@@ -18,14 +18,14 @@
 abort() { printf "\e[0;31m\n   $*\n\e[0m"; exit 1; }
 confirm() { read -sn 1 -p "$* [Y/N] "; [[ ${REPLY:0:1} = [JjYy] ]]; }
 
-[[ ! $(which oathtool) ]] && abort "oathtool is not installed."
+which oathtool &>/dev/null || abort "oathtool not found."
 
 # Ask for creation of directory if not exists
 if [[ ! -d ~/.otpkeys ]]; then
     echo -n "~/.otpkeys does not exist. "
     if confirm "Create?"; then
         mkdir ~/.otpkeys
-        exit 0
+        echo ""
     else
         abort "\nAbort."
     fi
@@ -34,6 +34,7 @@ fi
 # Identity for encrypting with GPG
 if [[ ! -f ~/.otpkeys/.otp-id ]]; then
     read -p "GPG Identity: " identity
+    gpg -k|grep -q "$identity" || abort "$identity is not valid."
     echo $identity > ~/.otpkeys/.otp-id
 fi
 
