@@ -82,6 +82,17 @@ if [ ${1} ]; then
             fi
         fi
 
+    # remove token
+    elif [[ ${1} == "-r" ]]; then
+        [[ ! ${2} ]] && abort "No service specified."
+        file=""
+        [[ -f ~/.otpkeys/${2}.key ]] && file=${2}.key
+        [[ -f ~/.otpkeys/${2}.key.gpg ]] && file=${2}.key.gpg
+        [[ ! $file ]] && abort "No such service '${2}'."
+        if confirm "Delete $file?"; then
+            rm -f ~/.otpkeys/$file
+        fi
+
     # check for encrypted keyfile...
     elif [ -f "${HOME}/.otpkeys/${1}.key.gpg" ]; then
         oathtool -b --totp $(gpg -d ~/.otpkeys/${1}.key.gpg 2>/dev/null)
@@ -106,7 +117,9 @@ else
     [[ $n == 0 ]] && abort "Create a token with otp.sh -n [SERVICE] [Security Key]"
 
     read -p "Choice: " choice
-    choice=$((choice-1))
-    echo -e "\n${services[$choice]}"
-    $0 ${services[$choice]}
+    if [[ $choice ]]; then
+        choice=$((choice-1))
+        echo -e "\n${services[$choice]}"
+        $0 ${services[$choice]}
+    fi
 fi
