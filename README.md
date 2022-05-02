@@ -34,4 +34,8 @@ Easiest way is simply type ```otp.sh``` and select a service from the list. The 
 
 <img src="https://runter-vom-mattenwagen.github.io/otpcli.gif">
 
+## Autocompletion
+
+Copy otp_complete to /etc/bash_completion.d/
+
 

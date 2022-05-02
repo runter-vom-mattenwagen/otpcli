@@ -1,0 +1,9 @@
+# copy to /etc/bash_complete.d
+list=""
+for item in $(ls -1 ~/.otpkeys/*.key.gpg); do
+        item=${item##*/}
+        list+=${item%%.*}
+        list+=" "
+done
+complete -W "${list}" -o bashdefault -o default 'otp.sh'
+
